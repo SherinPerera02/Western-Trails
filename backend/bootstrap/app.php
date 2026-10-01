@@ -13,10 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'admin'  => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'active' => \App\Http\Middleware\EnsureAccountIsActive::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Always return JSON errors for API routes (REQ-028)
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+            fn (Request $request, \Throwable $e) => $request->is('api/*') || $request->expectsJson()
         );
     })->create();
