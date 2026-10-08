@@ -2,117 +2,87 @@ import Link from "next/link";
 
 export default function MapPreview() {
   return (
-    <section className="border-b border-[#E8E2D5] bg-[#FBF9F4] px-4 py-16 sm:px-6 sm:py-20">
+    <section className="bg-[#16483E] px-4 py-16 text-white sm:px-6 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
-          {/* Left Column: Context and Key Distances */}
-          <div className="lg:col-span-6">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#C86446]">
-              Orientation
-            </span>
-
-            <h2 className="mt-2 font-serif text-3xl font-bold tracking-tight text-[#1E2421] sm:text-4xl">
-              Everything is within a 25 km ride
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-14">
+          {/* Left Column: Heading & Copy matching Screenshot 3 */}
+          <div className="lg:col-span-5">
+            <h2 className="font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-[44px] lg:leading-[1.12]">
+              Everything sits along one stretch of coast
             </h2>
 
-            <p className="mt-4 text-base leading-relaxed text-[#5C645F]">
-              From the quiet freshwater backwaters of Bolgoda to the colonial estates of Kalutara, every stop in Western Trails is reachable in under 45 minutes by tuk-tuk or scooter from the Panadura clock tower.
+            <p className="mt-5 text-base sm:text-lg leading-relaxed text-[#D0DDD7] max-w-md">
+              From Bolgoda in the north to Kalutara in the south is about 25 km. Most stops are a short tuk-tuk ride from the Galle Road.
             </p>
 
-            {/* Plain Text Distance Guide */}
-            <div className="mt-6 border-t border-[#E8E2D5] pt-4">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#174D44]">
-                Typical travel times from town centre
-              </span>
-              <ul className="mt-3 space-y-2 text-sm text-[#1E2421]">
-                <li className="flex items-baseline justify-between border-b border-[#E8E2D5]/50 pb-1.5">
-                  <span className="font-medium">Panadura Beach & Promenade</span>
-                  <span className="text-xs text-[#5C645F]">3 min · 800 m</span>
-                </li>
-                <li className="flex items-baseline justify-between border-b border-[#E8E2D5]/50 pb-1.5">
-                  <span className="font-medium">Rankoth Viharaya (Temple)</span>
-                  <span className="text-xs text-[#5C645F]">5 min · 1.8 km</span>
-                </li>
-                <li className="flex items-baseline justify-between border-b border-[#E8E2D5]/50 pb-1.5">
-                  <span className="font-medium">Bolgoda Lake Waterfront</span>
-                  <span className="text-xs text-[#5C645F]">15 min · 7.5 km</span>
-                </li>
-                <li className="flex items-baseline justify-between border-b border-[#E8E2D5]/50 pb-1.5">
-                  <span className="font-medium">Wadduwa Coconut Coast</span>
-                  <span className="text-xs text-[#5C645F]">12 min · 6.2 km</span>
-                </li>
-                <li className="flex items-baseline justify-between">
-                  <span className="font-medium">Kalutara Bodhiya & Richmond Castle</span>
-                  <span className="text-xs text-[#5C645F]">30 min · 16–18 km</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="mt-8">
-              <Link
-                href="/map"
-                className="inline-flex items-center gap-2 rounded-md bg-[#174D44] px-5 py-3 text-sm font-semibold text-[#FBF9F4] transition-colors hover:bg-[#103630]"
-              >
-                <span>Open interactive map</span>
-                <span>→</span>
-              </Link>
-            </div>
+            <Link
+              href="/map"
+              className="inline-block mt-8 text-sm font-medium text-white underline underline-offset-4 hover:text-[#D5EAE2] transition-colors"
+            >
+              Open the map
+            </Link>
           </div>
 
-          {/* Right Column: Handcrafted Map Graphic Preview Card */}
-          <div className="lg:col-span-6">
-            <div className="relative overflow-hidden rounded-lg border border-[#D5CCBA] bg-[#EFE9DC]/70 p-6 shadow-xs">
-              {/* Decorative Guidebook Map Canvas */}
-              <div className="relative flex aspect-4/3 flex-col justify-between rounded border border-[#D5CCBA] bg-[#FBF9F4] p-5">
-                {/* Coastal Marker Water Line */}
-                <div className="absolute right-0 top-0 bottom-0 w-24 border-l border-dashed border-[#174D44]/30 bg-[#DCE5E0]/40 sm:w-32">
-                  <span className="absolute bottom-4 right-3 -rotate-90 text-[10px] font-semibold uppercase tracking-widest text-[#174D44]/60">
-                    Indian Ocean
+          {/* Right Column: Parchment Map Card matching Screenshot 3 */}
+          <div className="lg:col-span-7">
+            <div className="relative flex overflow-hidden rounded-xs border border-[#2B5E54] bg-[#E1D7BF] h-[340px] sm:h-[380px] shadow-sm select-none">
+              {/* Left Sea Strip */}
+              <div className="w-16 sm:w-20 bg-[#54776D] shrink-0 flex items-center justify-center border-r border-[#4A6D63]" />
+
+              {/* Main Map Parchment Area */}
+              <div className="relative flex-1 bg-[#E1D7BF] p-6 sm:p-8">
+                {/* 1. Bolgoda Lake (Top-Right) */}
+                <div className="absolute top-[16%] right-[22%] sm:right-[26%] flex items-center gap-2">
+                  <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#A8522E] shrink-0" />
+                  <span className="font-sans text-xs sm:text-sm font-medium text-[#222A26]">
+                    Bolgoda Lake
                   </span>
                 </div>
 
-                {/* Simulated Landmarks on the Corridor */}
-                <div className="relative z-10 flex flex-col gap-4 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#174D44]" />
-                    <span className="font-semibold text-[#1E2421]">Bolgoda Lake Basin</span>
-                    <span className="text-[10px] text-[#5C645F]">(North inland)</span>
-                  </div>
-
-                  <div className="ml-6 flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-[#C86446]" />
-                    <span className="font-medium text-[#1E2421]">Rankoth Viharaya</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 rounded bg-[#EFE9DC] px-2 py-1 self-start font-serif font-bold text-[#174D44]">
-                    <span>★ Panadura Clock Tower (0 km hub)</span>
-                  </div>
-
-                  <div className="ml-4 flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-[#174D44]" />
-                    <span className="font-medium text-[#1E2421]">Panadura Beach & Pier</span>
-                  </div>
-
-                  <div className="ml-8 flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-[#5C645F]" />
-                    <span className="font-medium text-[#1E2421]">Wadduwa Fishing Shore</span>
-                  </div>
-
-                  <div className="ml-12 flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#C86446]" />
-                    <span className="font-semibold text-[#1E2421]">Kalutara Bodhiya & Richmond Castle</span>
-                  </div>
+                {/* 2. Rankoth Viharaya (Top-Center) */}
+                <div className="absolute top-[28%] left-[36%] sm:left-[40%] flex items-center gap-2">
+                  <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#A8522E] shrink-0" />
+                  <span className="font-sans text-xs sm:text-sm font-medium text-[#222A26]">
+                    Rankoth Viharaya
+                  </span>
                 </div>
 
-                <div className="relative z-10 mt-6 flex items-center justify-between border-t border-[#E8E2D5] pt-3 text-[11px] text-[#5C645F]">
-                  <span>25 km maximum radius</span>
-                  <Link
-                    href="/map"
-                    className="font-semibold text-[#174D44] hover:underline"
-                  >
-                    View coordinates on full map →
-                  </Link>
+                {/* 3. Panadura Beach (Upper Coast) */}
+                <div className="absolute top-[38%] left-[10%] sm:left-[12%] flex items-center gap-2">
+                  <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#A8522E] shrink-0" />
+                  <span className="font-sans text-xs sm:text-sm font-medium text-[#222A26]">
+                    Panadura Beach
+                  </span>
                 </div>
+
+                {/* 4. Wadduwa Beach (Mid Coast) */}
+                <div className="absolute top-[58%] left-[18%] sm:left-[22%] flex items-center gap-2">
+                  <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#A8522E] shrink-0" />
+                  <span className="font-sans text-xs sm:text-sm font-medium text-[#222A26]">
+                    Wadduwa Beach
+                  </span>
+                </div>
+
+                {/* 5. Kalutara Bodhiya (Lower Coast) */}
+                <div className="absolute bottom-[20%] left-[28%] sm:left-[32%] flex items-center gap-2">
+                  <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#A8522E] shrink-0" />
+                  <span className="font-sans text-xs sm:text-sm font-medium text-[#222A26]">
+                    Kalutara Bodhiya
+                  </span>
+                </div>
+
+                {/* 6. Richmond Castle (Lower Inland) */}
+                <div className="absolute bottom-[26%] right-[16%] sm:right-[22%] flex items-center gap-2">
+                  <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#A8522E] shrink-0" />
+                  <span className="font-sans text-xs sm:text-sm font-medium text-[#222A26]">
+                    Richmond Castle
+                  </span>
+                </div>
+
+                {/* Bottom-Right Note */}
+                <span className="absolute bottom-3 right-4 font-sans text-[10px] sm:text-[11px] text-[#7A7360] italic">
+                  Sea on the left · not to scale
+                </span>
               </div>
             </div>
           </div>
@@ -121,3 +91,4 @@ export default function MapPreview() {
     </section>
   );
 }
+

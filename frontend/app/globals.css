@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+  --font-serif: var(--font-serif), Georgia, serif;
+  --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
 :root {
   --background: #FBF9F4;
   --foreground: #1E2421;
@@ -14,3 +19,4 @@ body {
 h1, h2, h3, h4, .font-serif {
   font-family: var(--font-serif, Georgia, serif);
 }
+

@@ -25,76 +25,63 @@ export default function Navbar() {
 
   const isActive = (path: string) => pathname === path;
 
+  // Do not render navbar on standalone authentication pages
+  if (pathname === "/login" || pathname === "/register") {
+    return null;
+  }
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#E8E2D5] bg-[#FBF9F4]/95 backdrop-blur-xs">
+    <header className="sticky top-0 z-50 w-full border-b border-[#EAE4D7] bg-[#FBF9F4]/95 backdrop-blur-xs">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        {/* Brand */}
-        <div className="flex items-center gap-7">
+        {/* Brand - Pure serif typography as in Screenshot 1 */}
+        <div className="flex items-center">
           <Link
             href="/"
-            className="flex items-center gap-2.5"
+            className="flex items-center"
             onClick={() => setMobileMenuOpen(false)}
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[#174D44] text-[#FBF9F4]">
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </span>
-            <span className="font-serif text-xl font-bold tracking-tight text-[#174D44]">
+            <span className="font-serif text-2xl font-bold tracking-tight text-[#174D44]">
               Western Trails
             </span>
           </Link>
+        </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Main Navigation">
+        {/* Desktop Navigation Links */}
+        <div className="hidden items-center gap-7 md:flex">
+          <nav className="flex items-center gap-6" aria-label="Main Navigation">
             <Link
               href="/places"
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`text-sm transition-colors ${
                 isActive("/places")
-                  ? "bg-[#EFE9DC] text-[#174D44] font-semibold"
-                  : "text-[#1E2421]/80 hover:bg-[#F4F0E8] hover:text-[#174D44]"
+                  ? "text-[#174D44] font-semibold"
+                  : "text-[#1E2421] hover:text-[#174D44]"
               }`}
             >
               Places
             </Link>
             <Link
               href="/map"
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`text-sm transition-colors ${
                 isActive("/map")
-                  ? "bg-[#EFE9DC] text-[#174D44] font-semibold"
-                  : "text-[#1E2421]/80 hover:bg-[#F4F0E8] hover:text-[#174D44]"
+                  ? "text-[#174D44] font-semibold"
+                  : "text-[#1E2421] hover:text-[#174D44]"
               }`}
             >
               Map
             </Link>
             <Link
               href="/planner"
-              className={`inline-flex items-center gap-1.5 rounded-full border border-[#D5CCBA] px-3.5 py-1 text-xs font-semibold tracking-wide transition-colors ${
+              className={`text-sm transition-colors ${
                 isActive("/planner")
-                  ? "bg-[#174D44] text-[#FBF9F4] border-[#174D44]"
-                  : "bg-[#F4F0E8] text-[#174D44] hover:border-[#174D44]"
+                  ? "text-[#174D44] font-semibold"
+                  : "text-[#1E2421] hover:text-[#174D44]"
               }`}
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-[#C86446]" />
               Plan a day
             </Link>
           </nav>
-        </div>
 
-        {/* Desktop Right Section */}
-        <div className="hidden items-center gap-3 md:flex">
+          {/* Desktop Right Section (Login / Register / User state) */}
           {loading ? (
             <div className="h-7 w-20 animate-pulse rounded bg-[#E8E2D5]" />
           ) : user ? (
@@ -127,16 +114,16 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-5">
               <Link
                 href="/login"
-                className="px-3 py-1.5 text-sm font-medium text-[#1E2421] hover:text-[#174D44]"
+                className="text-sm font-medium text-[#1E2421] hover:text-[#174D44] transition-colors"
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="rounded-md bg-[#174D44] px-3.5 py-1.5 text-sm font-medium text-[#FBF9F4] transition-colors hover:bg-[#103630]"
+                className="rounded bg-[#174D44] px-4 py-2 text-sm font-medium text-[#FBF9F4] transition-colors hover:bg-[#103630]"
               >
                 Register
               </Link>

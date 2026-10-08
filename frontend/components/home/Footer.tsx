@@ -2,75 +2,39 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#E8E2D5] bg-[#F4F0E8] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8">
-          {/* Brand & Note */}
-          <div className="md:col-span-6">
-            <span className="font-serif text-2xl font-bold tracking-tight text-[#174D44]">
-              Western Trails
-            </span>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-[#5C645F]">
-              A slow day-trip guide for Sri Lanka&apos;s west coast. Created to help travelers and locals discover coastal temples, inland freshwater lakes, and unhurried sunset beaches within 25 km of Panadura.
-            </p>
-            <div className="mt-4 text-xs text-[#5C645F]">
-              <span>Coverage area: Panadura · Wadduwa · Kalutara · Bolgoda Lake · Moratuwa</span>
-            </div>
-          </div>
-
-          {/* Guide Links */}
-          <div className="md:col-span-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#1E2421]">
-              Explore
-            </span>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li>
-                <Link href="/places" className="text-[#5C645F] hover:text-[#174D44]">
-                  All Places
-                </Link>
-              </li>
-              <li>
-                <Link href="/map" className="text-[#5C645F] hover:text-[#174D44]">
-                  Interactive Map
-                </Link>
-              </li>
-              <li>
-                <Link href="/planner" className="text-[#5C645F] hover:text-[#174D44]">
-                  Plan a Day
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Account & Administration */}
-          <div className="md:col-span-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#1E2421]">
-              Account
-            </span>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li>
-                <Link href="/login" className="text-[#5C645F] hover:text-[#174D44]">
-                  Sign In
-                </Link>
-              </li>
-              <li>
-                <Link href="/register" className="text-[#5C645F] hover:text-[#174D44]">
-                  Register
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-[#E8E2D5] pt-6 text-xs text-[#5C645F] sm:flex-row sm:items-center">
-          <p>
-            &copy; {new Date().getFullYear()} Western Trails. All places verified locally.
-          </p>
-          <p>
-            Distances measured from Panadura town centre (6.7133° N, 79.9026° E).
+    <footer className="border-t border-[#D5C9B3] bg-[#E1D7C4] px-4 py-8 sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+        {/* Brand & Tagline matching Screenshot 5 */}
+        <div>
+          <span className="font-serif text-2xl font-bold tracking-tight text-[#174D44]">
+            Western Trails
+          </span>
+          <p className="mt-1 text-sm text-[#4E5751]">
+            Day trips around Panadura, written by people who live here.
           </p>
         </div>
+
+        {/* Links matching Screenshot 5 */}
+        <nav className="flex items-center gap-6 sm:gap-8 text-sm font-medium text-[#1E2421]">
+          <Link
+            href="/places"
+            className="hover:text-[#174D44] transition-colors"
+          >
+            Places
+          </Link>
+          <Link
+            href="/map"
+            className="hover:text-[#174D44] transition-colors"
+          >
+            Map
+          </Link>
+          <Link
+            href="/planner"
+            className="hover:text-[#174D44] transition-colors"
+          >
+            Plan a day
+          </Link>
+        </nav>
       </div>
     </footer>
   );

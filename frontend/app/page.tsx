@@ -33,8 +33,8 @@ export default async function HomePage() {
         <Hero />
         <CategoryRow />
         <FeaturedPlaces places={places} />
-        <PlanSteps />
         <MapPreview />
+        <PlanSteps />
       </main>
       <Footer />
     </div>
