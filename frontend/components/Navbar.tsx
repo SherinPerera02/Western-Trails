@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { Compass, Menu, X, Heart, MapPin, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
@@ -11,6 +12,11 @@ export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  // Standalone authentication pages must NOT display the navbar
+  if (pathname === "/login" || pathname === "/register") {
+    return null;
+  }
 
   const handleLogout = async () => {
     try {
@@ -23,82 +29,95 @@ export default function Navbar() {
     }
   };
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(path);
+  };
 
-  // Do not render navbar on standalone authentication pages
-  if (pathname === "/login" || pathname === "/register") {
-    return null;
-  }
+  const navLinks = [
+    { label: "Home", href: "/" },
+    { label: "Destinations", href: "/destinations" },
+    { label: "Explore", href: "/explore" },
+    { label: "Trip Planner", href: "/planner" },
+    { label: "Favorites", href: "/favorites" },
+    { label: "About", href: "/#about" },
+  ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#EAE4D7] bg-[#FBF9F4]/95 backdrop-blur-xs">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        {/* Brand - Pure serif typography as in Screenshot 1 */}
-        <div className="flex items-center">
-          <Link
-            href="/"
-            className="flex items-center"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <span className="font-serif text-2xl font-bold tracking-tight text-[#174D44]">
-              Western Trails
-            </span>
-          </Link>
-        </div>
+    <header className="sticky top-0 z-50 w-full border-b border-[#EAE4D7] bg-[#FBF9F4]/95 backdrop-blur-md transition-all">
+      <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Left: Western Trails Brand Logo */}
+        <Link
+          href="/"
+          className="group flex items-center gap-2.5 transition-opacity hover:opacity-90"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#174D44] text-[#FBF9F4] shadow-xs transition-transform duration-300 group-hover:scale-105">
+            <Compass
+              className="h-5 w-5 transition-transform duration-500 group-hover:rotate-45"
+              strokeWidth={1.8}
+            />
+          </span>
+          <span className="font-serif text-2xl font-bold tracking-tight text-[#1E2421]">
+            Western Trails
+          </span>
+        </Link>
 
-        {/* Desktop Navigation Links */}
-        <div className="hidden items-center gap-7 md:flex">
-          <nav className="flex items-center gap-6" aria-label="Main Navigation">
-            <Link
-              href="/places"
-              className={`text-sm transition-colors ${
-                isActive("/places")
-                  ? "text-[#174D44] font-semibold"
-                  : "text-[#1E2421] hover:text-[#174D44]"
-              }`}
-            >
-              Places
-            </Link>
-            <Link
-              href="/map"
-              className={`text-sm transition-colors ${
-                isActive("/map")
-                  ? "text-[#174D44] font-semibold"
-                  : "text-[#1E2421] hover:text-[#174D44]"
-              }`}
-            >
-              Map
-            </Link>
-            <Link
-              href="/planner"
-              className={`text-sm transition-colors ${
-                isActive("/planner")
-                  ? "text-[#174D44] font-semibold"
-                  : "text-[#1E2421] hover:text-[#174D44]"
-              }`}
-            >
-              Plan a day
-            </Link>
-          </nav>
+        {/* Center: Desktop Navigation Links */}
+        <nav
+          className="hidden items-center gap-1 lg:flex"
+          aria-label="Main Navigation"
+        >
+          {navLinks.map((link) => {
+            const active = isActive(link.href);
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={`relative px-3 py-2 text-sm font-medium transition-colors rounded-lg ${
+                  active
+                    ? "text-[#174D44] font-semibold bg-[#EFE9DC]/60"
+                    : "text-[#3D4540] hover:text-[#174D44] hover:bg-[#F3EFE6]"
+                }`}
+              >
+                {link.label}
+                {active && (
+                  <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-[#174D44] rounded-full" />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
 
-          {/* Desktop Right Section (Login / Register / User state) */}
+        {/* Right: Authentication / User State (Desktop) */}
+        <div className="hidden items-center gap-3 lg:flex">
           {loading ? (
-            <div className="h-7 w-20 animate-pulse rounded bg-[#E8E2D5]" />
+            <div className="h-8 w-24 animate-pulse rounded-lg bg-[#E8E2D5]" />
           ) : user ? (
             <div className="flex items-center gap-3">
-              <span className="flex items-center gap-2 text-sm text-[#1E2421]">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#EFE9DC] text-xs font-semibold text-[#174D44]">
+              <Link
+                href="/favorites"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#D8D2C5] bg-white text-[#5C645F] transition-colors hover:border-[#174D44] hover:text-[#174D44]"
+                title="Your saved favorites"
+              >
+                <Heart className="h-4 w-4" />
+              </Link>
+
+              <div className="flex items-center gap-2 rounded-lg border border-[#D8D2C5] bg-white px-3 py-1.5 shadow-2xs">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#174D44] text-xs font-semibold text-white">
                   {user.name.charAt(0).toUpperCase()}
                 </span>
-                <span className="max-w-[130px] truncate font-medium">{user.name}</span>
-              </span>
+                <span className="max-w-[120px] truncate text-sm font-medium text-[#1E2421]">
+                  {user.name}
+                </span>
+              </div>
 
               {user.role === "admin" && (
                 <Link
                   href="/admin"
-                  className={`rounded-md border border-[#174D44]/30 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-[#174D44] hover:bg-[#EFE9DC] ${
-                    isActive("/admin") ? "bg-[#EFE9DC]" : ""
-                  }`}
+                  className="rounded-lg border border-[#174D44]/40 bg-[#EFE9DC] px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#174D44] transition-colors hover:bg-[#E4DDD3]"
                 >
                   Admin
                 </Link>
@@ -108,127 +127,118 @@ export default function Navbar() {
                 type="button"
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="rounded-md border border-[#D5CCBA] bg-white px-3 py-1 text-xs font-medium text-[#1E2421] transition-colors hover:bg-[#F4F0E8] disabled:opacity-60"
+                className="rounded-lg border border-[#D5CCBA] bg-white px-3.5 py-1.5 text-xs font-semibold text-[#1E2421] transition-colors hover:bg-[#F4F0E8] disabled:opacity-60"
               >
-                {loggingOut ? "..." : "Logout"}
+                {loggingOut ? "…" : "Logout"}
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className="text-sm font-medium text-[#1E2421] hover:text-[#174D44] transition-colors"
+                className="px-3.5 py-2 text-sm font-medium text-[#1E2421] transition-colors hover:text-[#174D44]"
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="rounded bg-[#174D44] px-4 py-2 text-sm font-medium text-[#FBF9F4] transition-colors hover:bg-[#103630]"
+                className="rounded-lg bg-[#174D44] px-4.5 py-2 text-sm font-semibold text-[#FBF9F4] shadow-xs transition-all hover:bg-[#103630] hover:shadow-sm"
               >
-                Register
+                Sign Up
               </Link>
             </div>
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="flex items-center md:hidden">
+        {/* Mobile Hamburger Menu Button */}
+        <div className="flex items-center gap-2 lg:hidden">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rounded-md p-1.5 text-[#1E2421] hover:bg-[#F4F0E8] focus:outline-none"
+            className="inline-flex items-center justify-center rounded-lg border border-[#D8D2C5] bg-white p-2 text-[#1E2421] shadow-2xs transition-colors hover:bg-[#F4F0E8] focus:outline-none"
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="h-6 w-6 text-[#1E2421]" />
             ) : (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <Menu className="h-6 w-6 text-[#1E2421]" />
             )}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Drawer Navigation Menu */}
       {mobileMenuOpen && (
-        <div className="border-b border-[#E8E2D5] bg-[#FBF9F4] px-4 pb-5 pt-2 md:hidden">
+        <div className="border-b border-[#E8E2D5] bg-[#FBF9F4] px-4 pb-6 pt-3 shadow-lg lg:hidden">
           <nav className="flex flex-col gap-1.5" aria-label="Mobile Navigation">
-            <Link
-              href="/places"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`rounded-md px-3 py-2 text-base font-medium ${
-                isActive("/places") ? "bg-[#EFE9DC] text-[#174D44] font-semibold" : "text-[#1E2421]"
-              }`}
-            >
-              Places
-            </Link>
-            <Link
-              href="/map"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`rounded-md px-3 py-2 text-base font-medium ${
-                isActive("/map") ? "bg-[#EFE9DC] text-[#174D44] font-semibold" : "text-[#1E2421]"
-              }`}
-            >
-              Map
-            </Link>
-            <Link
-              href="/planner"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-[#174D44] ${
-                isActive("/planner") ? "bg-[#EFE9DC] font-semibold" : ""
-              }`}
-            >
-              <span className="h-2 w-2 rounded-full bg-[#C86446]" />
-              Plan a day
-            </Link>
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`rounded-lg px-3.5 py-2.5 text-base font-medium transition-colors ${
+                    active
+                      ? "bg-[#EFE9DC] text-[#174D44] font-semibold"
+                      : "text-[#1E2421] hover:bg-[#F3EFE6]"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
 
-            {user?.role === "admin" && (
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="rounded-md px-3 py-2 text-base font-medium text-[#174D44]"
-              >
-                Admin Dashboard
-              </Link>
-            )}
-
-            <div className="mt-3 border-t border-[#E8E2D5] pt-3">
+            <div className="mt-4 border-t border-[#E8E2D5] pt-4">
               {loading ? (
-                <div className="h-9 w-full animate-pulse rounded bg-[#E8E2D5]" />
+                <div className="h-10 w-full animate-pulse rounded-lg bg-[#E8E2D5]" />
               ) : user ? (
-                <div className="flex flex-col gap-2.5">
-                  <div className="px-1 text-sm">
-                    <span className="block font-semibold text-[#1E2421]">{user.name}</span>
-                    <span className="block text-xs text-[#5C645F]">{user.email}</span>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3 px-1">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#174D44] text-sm font-semibold text-white">
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                    <div className="overflow-hidden text-sm">
+                      <p className="truncate font-semibold text-[#1E2421]">{user.name}</p>
+                      <p className="truncate text-xs text-[#5C645F]">{user.email}</p>
+                    </div>
                   </div>
+
+                  {user.role === "admin" && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="rounded-lg bg-[#EFE9DC] py-2 text-center text-xs font-semibold uppercase tracking-wider text-[#174D44]"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
+
                   <button
                     type="button"
                     onClick={handleLogout}
                     disabled={loggingOut}
-                    className="w-full rounded-md border border-[#D5CCBA] bg-white py-2 text-center text-sm font-medium text-[#1E2421]"
+                    className="w-full rounded-lg border border-[#D5CCBA] bg-white py-2.5 text-center text-sm font-medium text-[#1E2421]"
                   >
-                    {loggingOut ? "..." : "Logout"}
+                    {loggingOut ? "Logging out…" : "Logout"}
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   <Link
                     href="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full rounded-md border border-[#D5CCBA] bg-white py-2 text-center text-sm font-medium text-[#1E2421]"
+                    className="w-full rounded-lg border border-[#D5CCBA] bg-white py-2.5 text-center text-sm font-semibold text-[#1E2421] transition-colors hover:bg-[#F4F0E8]"
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full rounded-md bg-[#174D44] py-2 text-center text-sm font-medium text-[#FBF9F4]"
+                    className="w-full rounded-lg bg-[#174D44] py-2.5 text-center text-sm font-semibold text-[#FBF9F4] shadow-xs transition-colors hover:bg-[#103630]"
                   >
-                    Register
+                    Sign Up
                   </Link>
                 </div>
               )}
