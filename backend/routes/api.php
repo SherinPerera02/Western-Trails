@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PlaceController;
+use App\Http\Controllers\Api\PlaceImageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', fn () => response()->json(['status' => 'ok']));
@@ -17,6 +18,7 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);
 
 // Public Place routes
 Route::get('/places', [PlaceController::class, 'index']);
+Route::get('/places/filters', [PlaceController::class, 'filters']);
 Route::get('/places/{id}', [PlaceController::class, 'show']);
 
 // Logged-in users (auth:sanctum, active)
@@ -34,6 +36,10 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
         Route::put('/places/{id}', [PlaceController::class, 'update']);
         Route::delete('/places/{id}', [PlaceController::class, 'destroy']);
 
+        // Place Image routes (non-prefixed alias)
+        Route::post('/places/{id}/images', [PlaceImageController::class, 'store']);
+        Route::delete('/places/{id}/images/{imageId}', [PlaceImageController::class, 'destroy']);
+
         // Admin-prefixed endpoints
         Route::prefix('admin')->group(function () {
             Route::get('/ping', fn () => response()->json(['message' => 'Admin access OK']));
@@ -41,6 +47,10 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
             Route::get('/places', [PlaceController::class, 'adminIndex']);
             Route::get('/places/{id}', [PlaceController::class, 'adminShow']);
             Route::post('/places/{id}/restore', [PlaceController::class, 'restore']);
+
+            // Place Image management
+            Route::post('/places/{id}/images', [PlaceImageController::class, 'store']);
+            Route::delete('/places/{id}/images/{imageId}', [PlaceImageController::class, 'destroy']);
         });
     });
 });

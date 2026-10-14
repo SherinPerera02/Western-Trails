@@ -13,8 +13,8 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  // Standalone authentication pages must NOT display the navbar
-  if (pathname === "/login" || pathname === "/register") {
+  // Standalone authentication and admin pages must NOT display the consumer navbar
+  if (pathname === "/login" || pathname === "/register" || pathname.startsWith("/admin")) {
     return null;
   }
 

@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\IndexPlacesRequest;
 use App\Http\Requests\StorePlaceRequest;
 use App\Http\Requests\UpdatePlaceRequest;
+use App\Http\Resources\PlaceDetailResource;
 use App\Http\Resources\PlaceResource;
 use App\Models\Attraction;
+use App\Models\Category;
+use App\Queries\PlaceSearch;
 use App\Services\DistanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,27 +24,86 @@ class PlaceController extends Controller
     ) {}
 
     /**
-     * Public listing: only active and non-soft-deleted attractions with 15 per page pagination.
+     * Public listing: only active and non-soft-deleted attractions with search, filters, and pagination.
      * GET /api/places
      */
-    public function index(): AnonymousResourceCollection
+    public function index(IndexPlacesRequest $request, PlaceSearch $search): AnonymousResourceCollection
     {
-        $places = Attraction::with(['categories', 'images'])
-            ->where('status', 'active')
-            ->paginate(15);
+        $places = $search->search($request);
+        $appliedFilters = $search->getAppliedFilters();
 
-        return PlaceResource::collection($places);
+        $resource = PlaceResource::collection($places);
+
+        $additional = [
+            'filters' => $appliedFilters,
+        ];
+
+        if ($places->isEmpty()) {
+            $additional['message'] = 'No places match your search.';
+        }
+
+        return $resource->additional($additional);
+    }
+
+    /**
+     * Filter metadata for places UI: active categories with place counts, min/max distance, max fee.
+     * GET /api/places/filters
+     */
+    public function filters(): JsonResponse
+    {
+        $categories = Category::where('status', 'active')
+            ->withCount(['attractions' => function ($q) {
+                $q->where('status', 'active');
+            }])
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(fn (Category $cat) => [
+                'id'           => $cat->id,
+                'name'         => $cat->name,
+                'places_count' => $cat->attractions_count,
+                'count'        => $cat->attractions_count,
+            ]);
+
+        $activeQuery = Attraction::where('status', 'active');
+
+        $minDistance = $activeQuery->whereNotNull('distance_km')->min('distance_km');
+        $maxDistance = $activeQuery->whereNotNull('distance_km')->max('distance_km');
+        $maxFee = $activeQuery->whereNotNull('entrance_fee')->max('entrance_fee');
+
+        return response()->json([
+            'data' => [
+                'categories'   => $categories,
+                'min_distance' => $minDistance !== null ? round((float) $minDistance, 2) : 0.0,
+                'max_distance' => $maxDistance !== null ? round((float) $maxDistance, 2) : 0.0,
+                'max_fee'      => $maxFee !== null ? round((float) $maxFee, 2) : 0.0,
+            ],
+        ]);
     }
 
     /**
      * Public show: view single active, non-soft-deleted attraction by id.
      * GET /api/places/{id}
      */
-    public function show(string|int $id): JsonResponse|PlaceResource
+    public function show(string|int $id): JsonResponse|PlaceDetailResource
     {
-        $place = Attraction::with(['categories', 'images'])
-            ->where('status', 'active')
-            ->find($id);
+        if (! is_numeric($id) || (int) $id <= 0) {
+            return response()->json([
+                'message' => 'Place not found.',
+            ], 404);
+        }
+
+        $query = Attraction::where('status', 'active')
+            ->with([
+                'categories' => fn ($q) => $q->where('status', 'active'),
+                'images'     => fn ($q) => $q->orderBy('id', 'asc'),
+            ]);
+
+        if (\Illuminate\Support\Facades\Schema::hasTable('reviews')) {
+            $query->withAvg(['reviews' => fn ($q) => $q->where('status', 'approved')], 'rating')
+                  ->withCount(['reviews' => fn ($q) => $q->where('status', 'approved')]);
+        }
+
+        $place = $query->find($id);
 
         if (! $place) {
             return response()->json([
@@ -48,7 +111,9 @@ class PlaceController extends Controller
             ], 404);
         }
 
-        return new PlaceResource($place);
+        $nearby = $this->distanceService->findNearbyPlaces($place, 5.0, 4);
+
+        return new PlaceDetailResource($place, $nearby);
     }
 
     /**

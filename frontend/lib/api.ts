@@ -6,6 +6,9 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  if (config.url && config.url.startsWith("/api/")) {
+    config.url = config.url.replace(/^\/api/, "");
+  }
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("wt_token");
     if (token) config.headers.Authorization = `Bearer ${token}`;

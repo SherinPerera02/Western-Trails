@@ -49,4 +49,87 @@ class DistanceService
 
         return $distanceKm > $radius;
     }
+
+    /**
+     * Find up to $limit other active attractions within $maxDistanceKm using a SQL bounding-box pre-filter plus Haversine formula.
+     * Excludes the place itself.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function findNearbyPlaces(\App\Models\Attraction $place, float $maxDistanceKm = 5.0, int $limit = 4): array
+    {
+        $lat = (float) $place->latitude;
+        $lng = (float) $place->longitude;
+
+        if ($lat == 0.0 && $lng == 0.0) {
+            return [];
+        }
+
+        // Bounding box pre-filter calculation:
+        $radDist = $maxDistanceKm / self::EARTH_RADIUS_KM;
+
+        $deltaLat = rad2deg($radDist);
+        $minLat = $lat - $deltaLat;
+        $maxLat = $lat + $deltaLat;
+
+        $latRad = deg2rad($lat);
+        $cosLat = cos($latRad);
+        $deltaLng = $cosLat > 0.00001 ? rad2deg($radDist / $cosLat) : $deltaLat;
+        $minLng = $lng - abs($deltaLng);
+        $maxLng = $lng + abs($deltaLng);
+
+        // SQL Bounding Box pre-filter: only matching rows are loaded into PHP
+        $candidates = \App\Models\Attraction::query()
+            ->where('status', 'active')
+            ->where('id', '!=', $place->id)
+            ->whereBetween('latitude', [$minLat, $maxLat])
+            ->whereBetween('longitude', [$minLng, $maxLng])
+            ->with([
+                'categories' => fn ($q) => $q->where('status', 'active'),
+                'firstImage',
+                'images' => fn ($q) => $q->orderBy('id', 'asc'),
+            ])
+            ->get();
+
+        $nearby = [];
+
+        foreach ($candidates as $candidate) {
+            $cLat = (float) $candidate->latitude;
+            $cLng = (float) $candidate->longitude;
+
+            $dist = $this->calculateDistance($lat, $lng, $cLat, $cLng);
+            if ($dist <= $maxDistanceKm) {
+                $image = $candidate->relationLoaded('firstImage')
+                    ? $candidate->firstImage
+                    : ($candidate->relationLoaded('images') ? $candidate->images->first() : null);
+
+                $firstImageUrl = null;
+                if ($image && $image->image_path) {
+                    if (str_starts_with($image->image_path, 'http://') || str_starts_with($image->image_path, 'https://')) {
+                        $firstImageUrl = $image->image_path;
+                    } else {
+                        $firstImageUrl = asset('storage/' . ltrim($image->image_path, '/'));
+                    }
+                }
+
+                $catNames = $candidate->categories->pluck('name')->values()->all();
+
+                $nearby[] = [
+                    'id'                    => $candidate->id,
+                    'name'                  => $candidate->name,
+                    'categories'            => $catNames,
+                    'category_names'        => $catNames,
+                    'distance_from_here_km' => $dist,
+                    'first_image'           => $firstImageUrl,
+                    'first_image_url'       => $firstImageUrl,
+                    'image_url'             => $firstImageUrl,
+                ];
+            }
+        }
+
+        // Sort by distance ascending
+        usort($nearby, fn ($a, $b) => $a['distance_from_here_km'] <=> $b['distance_from_here_km']);
+
+        return array_slice($nearby, 0, $limit);
+    }
 }
