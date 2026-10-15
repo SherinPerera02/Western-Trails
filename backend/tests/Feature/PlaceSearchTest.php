@@ -167,7 +167,7 @@ class PlaceSearchTest extends TestCase
     public function test_empty_search_returns_all_places(): void
     {
         $cat = Category::factory()->create(['status' => 'active']);
-        Attraction::factory()->count(3)->create(['status' => 'active'])->each(fn ($p) => $p->categories()->attach($cat->id));
+        Attraction::factory()->count(3)->create(['status' => 'active'])->each(fn (Attraction $p) => $p->categories()->attach($cat->id));
 
         $res = $this->getJson('/api/places?q=');
         $res->assertOk()->assertJsonCount(3, 'data');

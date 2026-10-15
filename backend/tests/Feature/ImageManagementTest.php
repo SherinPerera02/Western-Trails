@@ -6,6 +6,7 @@ use App\Models\Attraction;
 use App\Models\AttractionImage;
 use App\Models\Category;
 use App\Models\User;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -19,12 +20,13 @@ class ImageManagementTest extends TestCase
     private User $tourist;
     private Attraction $place;
     private string $validPngBytes;
+    private FilesystemAdapter $storage;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Storage::fake('public');
+        $this->storage = Storage::fake('public');
 
         $this->admin = User::factory()->create([
             'role'   => 'admin',
@@ -75,7 +77,7 @@ class ImageManagementTest extends TestCase
         $this->assertStringStartsWith("places/{$this->place->id}/", $dbImage->image_path);
 
         // File exists on public storage
-        Storage::disk('public')->assertExists($dbImage->image_path);
+        $this->storage->assertExists($dbImage->image_path);
     }
 
     public function test_non_image_file_renamed_to_jpg_is_rejected(): void
@@ -118,7 +120,7 @@ class ImageManagementTest extends TestCase
     public function test_delete_removes_file_and_db_record(): void
     {
         $imagePath = "places/{$this->place->id}/test_image.jpg";
-        Storage::disk('public')->put($imagePath, 'dummy-image-bytes');
+        $this->storage->put($imagePath, 'dummy-image-bytes');
 
         $image = AttractionImage::factory()->create([
             'attraction_id' => $this->place->id,
@@ -126,7 +128,7 @@ class ImageManagementTest extends TestCase
             'caption'       => 'To be deleted',
         ]);
 
-        Storage::disk('public')->assertExists($imagePath);
+        $this->storage->assertExists($imagePath);
 
         $response = $this->actingAs($this->admin)->deleteJson("/api/admin/places/{$this->place->id}/images/{$image->id}");
 
@@ -137,7 +139,7 @@ class ImageManagementTest extends TestCase
         $this->assertDatabaseMissing('attraction_images', ['id' => $image->id]);
 
         // File deleted from storage
-        Storage::disk('public')->assertMissing($imagePath);
+        $this->storage->assertMissing($imagePath);
     }
 
     public function test_tourist_and_guest_cannot_manage_images(): void

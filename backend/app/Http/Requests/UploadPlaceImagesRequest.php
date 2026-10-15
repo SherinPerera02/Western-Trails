@@ -79,13 +79,13 @@ class UploadPlaceImagesRequest extends FormRequest
 
             // Verify the real underlying MIME type directly via finfo
             $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
 
             foreach ($uploadedFiles as $index => $file) {
                 if ($file instanceof \Illuminate\Http\UploadedFile && $file->isValid()) {
                     $realPath = $file->getRealPath();
                     if ($realPath && file_exists($realPath)) {
-                        $detectedMime = finfo_file($finfo, $realPath);
+                        $detectedMime = $finfo->file($realPath);
                         if ($detectedMime && ! in_array($detectedMime, $allowedMimes, true)) {
                             $validator->errors()->add(
                                 "images.{$index}",
@@ -95,8 +95,6 @@ class UploadPlaceImagesRequest extends FormRequest
                     }
                 }
             }
-
-            finfo_close($finfo);
         });
     }
 

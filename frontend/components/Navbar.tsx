@@ -38,6 +38,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: "Home", href: "/" },
+    { label: "Places", href: "/places" },
     { label: "Destinations", href: "/destinations" },
     { label: "Explore", href: "/explore" },
     { label: "Trip Planner", href: "/planner" },
