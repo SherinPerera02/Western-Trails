@@ -106,7 +106,7 @@ class PlaceResource extends JsonResource
             return true;
         }
 
-        // Must be GET /api/places and NOT /api/places/{id} and NOT /api/admin/*
-        return $request->is('api/places') && $request->isMethod('GET');
+        // Must be GET /api/places or /api/favorites and NOT /api/places/{id} and NOT /api/admin/*
+        return ($request->is('api/places') || $request->is('api/favorites*')) && $request->isMethod('GET');
     }
 }

@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { X, Heart, CalendarPlus, LogIn, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { Place } from "./types";
+import { Place, PlaceDetail } from "./types";
 
 export type FeatureModalType = "save" | "plan" | null;
 
 interface FeatureNoticeModalProps {
   type: FeatureModalType;
-  place: Place | null;
+  place: Place | PlaceDetail | { id: number; name: string } | null;
   onClose: () => void;
 }
 

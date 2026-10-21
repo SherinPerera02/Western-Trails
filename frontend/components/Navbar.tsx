@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Compass, Menu, X, Heart, MapPin, User as UserIcon } from "lucide-react";
+import { Compass, Menu, X, Heart, MapPin, User as UserIcon, Calendar } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { usePlan } from "@/context/PlanContext";
 
 export default function Navbar() {
   const { user, loading, logout } = useAuth();
+  const { totalItemsCount } = usePlan();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -39,10 +41,11 @@ export default function Navbar() {
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Places", href: "/places" },
+    { label: "Map", href: "/map" },
     { label: "Destinations", href: "/destinations" },
     { label: "Explore", href: "/explore" },
     { label: "Trip Planner", href: "/planner" },
-    { label: "Favorites", href: "/favorites" },
+    { label: "Saved", href: "/saved" },
     { label: "About", href: "/#about" },
   ];
 
@@ -94,14 +97,29 @@ export default function Navbar() {
 
         {/* Right: Authentication / User State (Desktop) */}
         <div className="hidden items-center gap-3 lg:flex">
+          {/* Visit Planner quick link with stop counter */}
+          <Link
+            href="/planner"
+            className="relative flex h-9 items-center gap-1.5 rounded-lg border border-[#D8D2C5] bg-white px-2.5 text-[#5C645F] transition-colors hover:border-[#174D44] hover:text-[#174D44]"
+            title="Your visit plan"
+          >
+            <Calendar className="h-4 w-4 text-[#174D44]" />
+            <span className="text-xs font-semibold text-[#1E2421]">Plan</span>
+            {totalItemsCount > 0 && (
+              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#174D44] px-1 text-[11px] font-bold text-white">
+                {totalItemsCount}
+              </span>
+            )}
+          </Link>
+
           {loading ? (
             <div className="h-8 w-24 animate-pulse rounded-lg bg-[#E8E2D5]" />
           ) : user ? (
             <div className="flex items-center gap-3">
               <Link
-                href="/favorites"
+                href="/saved"
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#D8D2C5] bg-white text-[#5C645F] transition-colors hover:border-[#174D44] hover:text-[#174D44]"
-                title="Your saved favorites"
+                title="Your saved places"
               >
                 <Heart className="h-4 w-4" />
               </Link>
@@ -175,18 +193,24 @@ export default function Navbar() {
           <nav className="flex flex-col gap-1.5" aria-label="Mobile Navigation">
             {navLinks.map((link) => {
               const active = isActive(link.href);
+              const isPlanner = link.href === "/planner";
               return (
                 <Link
                   key={link.label}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`rounded-lg px-3.5 py-2.5 text-base font-medium transition-colors ${
+                  className={`flex items-center justify-between rounded-lg px-3.5 py-2.5 text-base font-medium transition-colors ${
                     active
                       ? "bg-[#EFE9DC] text-[#174D44] font-semibold"
                       : "text-[#1E2421] hover:bg-[#F3EFE6]"
                   }`}
                 >
-                  {link.label}
+                  <span>{link.label}</span>
+                  {isPlanner && totalItemsCount > 0 && (
+                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#174D44] px-1.5 text-xs font-bold text-white">
+                      {totalItemsCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}

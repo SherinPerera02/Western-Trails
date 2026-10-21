@@ -81,6 +81,107 @@ class PlaceController extends Controller
     }
 
     /**
+     * Lightweight endpoint for map view returning only essential attributes for active, non-deleted places (BR-005).
+     * Capped at 200 rows without pagination. Supports optional filters (q, category, max_distance, free).
+     * GET /api/places/map
+     */
+    public function map(Request $request): JsonResponse
+    {
+        $query = Attraction::query()
+            ->where('status', 'active');
+
+        // Optional text search
+        if ($request->filled('q')) {
+            $q = trim((string) $request->input('q'));
+            $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $q);
+            $pattern = "%{$escaped}%";
+            $operator = DB::connection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'LIKE';
+
+            $query->where(function ($builder) use ($operator, $pattern) {
+                $builder->where('name', $operator, $pattern)
+                    ->orWhere('description', $operator, $pattern)
+                    ->orWhere('address', $operator, $pattern)
+                    ->orWhere('activities', $operator, $pattern);
+            });
+        }
+
+        // Optional category filter (by ID or name)
+        if ($request->filled('category')) {
+            $categoryInput = $request->input('category');
+            $categoryList = is_array($categoryInput)
+                ? $categoryInput
+                : (str_contains((string) $categoryInput, ',')
+                    ? explode(',', (string) $categoryInput)
+                    : [(string) $categoryInput]);
+
+            $query->whereHas('categories', function ($b) use ($categoryList) {
+                $b->where('status', 'active')
+                  ->where(function ($sub) use ($categoryList) {
+                      $sub->whereIn('categories.id', $categoryList)
+                          ->orWhereIn('categories.name', $categoryList);
+                  });
+            });
+        }
+
+        // Optional max_distance
+        if ($request->filled('max_distance')) {
+            $query->where('distance_km', '<=', (float) $request->input('max_distance'));
+        }
+
+        // Optional free filter
+        if ($request->boolean('free') || $request->input('free') === '1' || $request->input('free') === 1) {
+            $query->where('entrance_fee', 0);
+        }
+
+        $places = $query->with([
+            'categories' => fn ($b) => $b->where('status', 'active'),
+            'firstImage',
+            'images'     => fn ($b) => $b->orderBy('id', 'asc'),
+        ])
+        ->orderBy('distance_km', 'asc')
+        ->limit(200)
+        ->get();
+
+        $data = $places->map(function (Attraction $place) {
+            $image = $place->relationLoaded('firstImage') && $place->firstImage
+                ? $place->firstImage
+                : ($place->relationLoaded('images') ? $place->images->first() : null);
+
+            $imageUrl = null;
+            if ($image && $image->image_path) {
+                if (str_starts_with($image->image_path, 'http://') || str_starts_with($image->image_path, 'https://')) {
+                    $imageUrl = $image->image_path;
+                } else {
+                    $imageUrl = asset('storage/' . ltrim($image->image_path, '/'));
+                }
+            }
+
+            $categoryNames = $place->categories->pluck('name')->values()->all();
+
+            return [
+                'id'              => $place->id,
+                'name'            => $place->name,
+                'latitude'        => (float) $place->latitude,
+                'longitude'       => (float) $place->longitude,
+                'category_names'  => $categoryNames,
+                'categories'      => $place->categories->map(fn ($cat) => [
+                    'id'   => $cat->id,
+                    'name' => $cat->name,
+                ])->all(),
+                'distance_km'     => $place->distance_km !== null ? (float) $place->distance_km : null,
+                'first_image_url' => $imageUrl,
+                'image_url'       => $imageUrl,
+                'opening_hours'   => $place->opening_hours,
+            ];
+        });
+
+        return response()->json([
+            'data'  => $data,
+            'total' => $data->count(),
+        ]);
+    }
+
+    /**
      * Public show: view single active, non-soft-deleted attraction by id.
      * GET /api/places/{id}
      */

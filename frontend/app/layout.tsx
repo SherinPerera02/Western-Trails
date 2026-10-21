@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { Fraunces, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { PlanProvider } from "@/context/PlanContext";
+import { FavoritesProvider } from "@/context/FavoritesContext";
+import { CompareProvider } from "@/context/CompareContext";
 import Navbar from "@/components/Navbar";
+import CompareStickyBar from "@/src/components/compare/CompareStickyBar";
 
 const fraunces = Fraunces({
   variable: "--font-serif",
@@ -34,8 +38,15 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#FBF9F4] text-[#1E2421] font-sans antialiased selection:bg-[#E8E2D5] selection:text-[#174D44]">
         <AuthProvider>
-          <Navbar />
-          <div className="flex flex-1 flex-col">{children}</div>
+          <PlanProvider>
+            <FavoritesProvider>
+              <CompareProvider>
+                <Navbar />
+                <div className="flex flex-1 flex-col">{children}</div>
+                <CompareStickyBar />
+              </CompareProvider>
+            </FavoritesProvider>
+          </PlanProvider>
         </AuthProvider>
       </body>
     </html>

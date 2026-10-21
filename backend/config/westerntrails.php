@@ -8,4 +8,5 @@ return [
         'longitude' => 79.9026,
         'radius_km' => 25,
     ],
+    'average_speed_kmh' => 30,
 ];
