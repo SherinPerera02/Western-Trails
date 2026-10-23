@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useTransition } from "react";
+import { useState, useEffect, useCallback, useTransition, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import api, { apiError } from "@/lib/api";
@@ -9,7 +9,6 @@ import MapSidePanel from "./MapSidePanel";
 import FeatureNoticeModal, { FeatureModalType } from "../places/FeatureNoticeModal";
 import { usePlan } from "@/context/PlanContext";
 
-// 1. Dynamic import of the map component with ssr: false as required
 const InteractiveMap = dynamic(() => import("./InteractiveMap"), {
   ssr: false,
   loading: () => (
@@ -173,7 +172,7 @@ export default function MapPageView() {
   const hasActiveFilters = Boolean(searchQuery.trim() || selectedCategory || showPlanOnly);
 
   return (
-    <div className="flex flex-1 flex-col md:flex-row h-[calc(100vh-4.5rem)] min-h-[500px] overflow-hidden bg-[#FBF9F4]">
+    <div className="flex flex-1 flex-col md:flex-row h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] min-h-0 overflow-hidden bg-[#FBF9F4]">
       {/* Side Panel (Desktop left sidebar / Mobile bottom drawer) */}
       <MapSidePanel
         places={filteredPlaces}
@@ -195,7 +194,7 @@ export default function MapPageView() {
       />
 
       {/* Main Map View Area */}
-      <main className="relative flex-1 h-full w-full overflow-hidden">
+      <main className="relative flex-1 flex flex-col h-[calc(100vh-4.5rem)] min-h-[calc(100vh-4.5rem)] md:min-h-0 w-full overflow-hidden">
         <InteractiveMap
           places={filteredPlaces}
           selectedPlaceId={selectedPlaceId}

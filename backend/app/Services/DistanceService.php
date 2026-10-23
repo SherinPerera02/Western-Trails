@@ -123,8 +123,15 @@ class DistanceService
                     'first_image'           => $firstImageUrl,
                     'first_image_url'       => $firstImageUrl,
                     'image_url'             => $firstImageUrl,
+                    'is_restaurant'         => in_array('Restaurant', $catNames) || in_array('Restaurants', $catNames),
+                    'is_recreation'         => in_array('Recreation', $catNames),
                 ];
             }
+        }
+
+        // If fewer than 2 nearby places within 5km, expand radius up to 15km
+        if (count($nearby) < 2 && $maxDistanceKm < 15.0) {
+            return $this->findNearbyPlaces($place, 15.0, $limit);
         }
 
         // Sort by distance ascending

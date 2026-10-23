@@ -75,6 +75,8 @@ export interface NearbyPlace {
   first_image?: string | null;
   first_image_url?: string | null;
   image_url?: string | null;
+  is_restaurant?: boolean;
+  is_recreation?: boolean;
 }
 
 export interface PlaceDetail {

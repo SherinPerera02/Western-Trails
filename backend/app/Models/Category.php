@@ -9,7 +9,12 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'description',
+        'icon',
+        'status',
+    ];
 
     public function attractions() { return $this->belongsToMany(Attraction::class, 'attraction_category'); }
 }

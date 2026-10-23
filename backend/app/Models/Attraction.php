@@ -12,7 +12,22 @@ class Attraction extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'description',
+        'address',
+        'latitude',
+        'longitude',
+        'distance_km',
+        'opening_hours',
+        'entrance_fee',
+        'facilities',
+        'activities',
+        'travel_tips',
+        'visitor_guidelines',
+        'contact_info',
+        'status',
+    ];
 
     public function categories(): BelongsToMany { return $this->belongsToMany(Category::class, 'attraction_category'); }
     public function images(): HasMany         { return $this->hasMany(AttractionImage::class); }

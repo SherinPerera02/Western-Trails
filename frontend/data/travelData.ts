@@ -1,5 +1,6 @@
 export interface Destination {
   id: string;
+  placeId?: number;
   name: string;
   location: string;
   category: "Beaches" | "Nature" | "Historical" | "Cultural" | "Religious" | "Adventure" | "Food & Dining" | "Family";
@@ -41,6 +42,7 @@ export interface WhyFeature {
 export const POPULAR_DESTINATIONS: Destination[] = [
   {
     id: "panadura-beach",
+    placeId: 1,
     name: "Panadura Beach",
     location: "Panadura, West Coast",
     category: "Beaches",
@@ -54,6 +56,7 @@ export const POPULAR_DESTINATIONS: Destination[] = [
   },
   {
     id: "bolgoda-lake",
+    placeId: 12,
     name: "Bolgoda Lake",
     location: "Moratuwa / Panadura Inland",
     category: "Nature",
@@ -67,6 +70,7 @@ export const POPULAR_DESTINATIONS: Destination[] = [
   },
   {
     id: "wadduwa-beach",
+    placeId: 13,
     name: "Wadduwa Beach",
     location: "Wadduwa, South of Panadura",
     category: "Beaches",
@@ -80,6 +84,7 @@ export const POPULAR_DESTINATIONS: Destination[] = [
   },
   {
     id: "kalutara-bodhiya",
+    placeId: 14,
     name: "Kalutara Bodhiya",
     location: "Kalutara South Bridge",
     category: "Religious",
@@ -93,6 +98,7 @@ export const POPULAR_DESTINATIONS: Destination[] = [
   },
   {
     id: "richmond-castle",
+    placeId: 15,
     name: "Richmond Castle",
     location: "Kalutara Inland",
     category: "Historical",
@@ -106,6 +112,7 @@ export const POPULAR_DESTINATIONS: Destination[] = [
   },
   {
     id: "rankoth-viharaya",
+    placeId: 2,
     name: "Rankoth Viharaya",
     location: "Panadura Historic Quarter",
     category: "Religious",

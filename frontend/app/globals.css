@@ -20,3 +20,25 @@ h1, h2, h3, h4, .font-serif {
   font-family: var(--font-serif, Georgia, serif);
 }
 
+/* Leaflet Interactive Map container sizing and tile rendering */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  flex: 1 1 0% !important;
+  background-color: #E1D7BF !important;
+  z-index: 0;
+}
+
+.leaflet-tile-container img {
+  max-width: none !important;
+  max-height: none !important;
+}
+
+@keyframes wt-ping {
+  75%, 100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+

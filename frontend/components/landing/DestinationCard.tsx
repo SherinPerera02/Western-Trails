@@ -1,59 +1,55 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Star, MapPin, Heart, ArrowRight } from "lucide-react";
 import { Destination } from "@/data/travelData";
-import { useAuth } from "@/context/AuthContext";
+import { useFavorites } from "@/context/FavoritesContext";
 
 interface DestinationCardProps {
   destination: Destination;
   onSelect?: (destination: Destination) => void;
 }
 
-export default function DestinationCard({ destination, onSelect }: DestinationCardProps) {
-  const { user } = useAuth();
-  const router = useRouter();
-  const [isFavorite, setIsFavorite] = useState(false);
+const DESTINATION_PLACE_IDS: Record<string, number> = {
+  "panadura-beach": 1,
+  "bolgoda-lake": 12,
+  "wadduwa-beach": 13,
+  "kalutara-bodhiya": 14,
+  "richmond-castle": 15,
+  "rankoth-viharaya": 2,
+};
 
+export default function DestinationCard({ destination, onSelect }: DestinationCardProps) {
+  const { isFavorite, toggleFavorite } = useFavorites();
+
+  const placeId = destination.placeId || DESTINATION_PLACE_IDS[destination.id];
+  const isFav = placeId ? isFavorite(placeId) : false;
+
+  // Clean up legacy localStorage item so it stops falsely persisting across all users in this browser
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("wt_favorites");
-      if (stored) {
-        const favs: string[] = JSON.parse(stored);
-        setIsFavorite(favs.includes(destination.id));
+      if (typeof window !== "undefined" && localStorage.getItem("wt_favorites")) {
+        localStorage.removeItem("wt_favorites");
       }
     } catch {
       // ignore
     }
-  }, [destination.id]);
+  }, []);
 
-  const toggleFavorite = (e: React.MouseEvent) => {
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
-    try {
-      const stored = localStorage.getItem("wt_favorites");
-      let favs: string[] = stored ? JSON.parse(stored) : [];
-      if (favs.includes(destination.id)) {
-        favs = favs.filter((id) => id !== destination.id);
-        setIsFavorite(false);
-      } else {
-        favs.push(destination.id);
-        setIsFavorite(true);
-      }
-      localStorage.setItem("wt_favorites", JSON.stringify(favs));
-    } catch {
-      setIsFavorite(!isFavorite);
+    if (placeId) {
+      await toggleFavorite(placeId, destination.name);
     }
   };
+
+  const detailsHref = placeId
+    ? `/places/${placeId}`
+    : `/places?q=${encodeURIComponent(destination.name)}`;
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-[#E8E2D5] bg-white shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-[#174D44]/30 hover:shadow-md">
@@ -78,16 +74,17 @@ export default function DestinationCard({ destination, onSelect }: DestinationCa
         {/* Favorite Heart Button */}
         <button
           type="button"
-          onClick={toggleFavorite}
-          aria-label={isFavorite ? "Remove from favorites" : "Save to favorites"}
+          onClick={handleToggleFavorite}
+          aria-label={isFav ? `Remove ${destination.name} from favorites` : `Save ${destination.name} to favorites`}
+          title={isFav ? "Saved to favorites" : "Save to favorites"}
           className={`absolute right-3.5 top-3.5 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-md transition-all shadow-xs ${
-            isFavorite
+            isFav
               ? "bg-[#8C2E1F] text-white"
               : "bg-white/85 text-[#1E2421] hover:bg-white hover:text-[#8C2E1F]"
           }`}
         >
           <Heart
-            className={`h-4.5 w-4.5 ${isFavorite ? "fill-current" : ""}`}
+            className={`h-4.5 w-4.5 ${isFav ? "fill-current" : ""}`}
             strokeWidth={2}
           />
         </button>
@@ -112,9 +109,11 @@ export default function DestinationCard({ destination, onSelect }: DestinationCa
           <span className="text-xs font-semibold uppercase tracking-wider text-[#C86446]">
             {destination.location}
           </span>
-          <h3 className="mt-1 font-serif text-xl font-bold text-[#1E2421] transition-colors group-hover:text-[#174D44]">
-            {destination.name}
-          </h3>
+          <Link href={detailsHref} className="block group-hover:text-[#174D44] transition-colors">
+            <h3 className="mt-1 font-serif text-xl font-bold text-[#1E2421] transition-colors group-hover:text-[#174D44]">
+              {destination.name}
+            </h3>
+          </Link>
         </div>
 
         <p className="line-clamp-2 text-sm leading-relaxed text-[#5C645F]">
@@ -136,7 +135,7 @@ export default function DestinationCard({ destination, onSelect }: DestinationCa
         {/* Action Button */}
         <div className="mt-6 border-t border-[#EAE4D7] pt-4">
           <Link
-            href={`/destinations#${destination.id}`}
+            href={detailsHref}
             onClick={(e) => {
               if (onSelect) {
                 e.preventDefault();

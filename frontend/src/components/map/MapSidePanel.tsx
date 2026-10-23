@@ -71,7 +71,7 @@ export default function MapSidePanel({
       {/* ============================================================== */}
       <aside
         aria-label="Places directory and filters"
-        className="hidden md:flex h-full w-80 lg:w-[400px] shrink-0 flex-col border-r border-[#E8E2D5] bg-[#FBF9F4] shadow-sm z-10"
+        className="hidden md:flex h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] min-h-0 w-80 lg:w-[400px] shrink-0 flex-col border-r border-[#E8E2D5] bg-[#FBF9F4] shadow-sm z-10"
       >
         {/* Panel Header */}
         <div className="border-b border-[#E8E2D5] p-5 space-y-4 bg-white/60">
@@ -197,7 +197,7 @@ export default function MapSidePanel({
         </div>
 
         {/* Scrollable Places Directory */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 focus:outline-none">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 focus:outline-none">
           {/* Requirement 8: Loading State */}
           {loading && (
             <div className="space-y-3">

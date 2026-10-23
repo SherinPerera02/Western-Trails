@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Compass, MapPin, ArrowRight, ImageIcon } from "lucide-react";
+import { Compass, MapPin, ArrowRight, ImageIcon, Utensils, Sparkles } from "lucide-react";
 import { NearbyPlace } from "./types";
 
 interface PlaceNearbySectionProps {
@@ -19,7 +19,7 @@ export default function PlaceNearbySection({ nearby }: PlaceNearbySectionProps) 
         <div>
           <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#A8522E] mb-1">
             <Compass className="h-4 w-4" />
-            <span>Nearby Destinations</span>
+            <span>Nearby Destinations & Services</span>
           </div>
           <h2
             id="nearby-places-heading"
@@ -29,9 +29,9 @@ export default function PlaceNearbySection({ nearby }: PlaceNearbySectionProps) 
           </h2>
         </div>
 
-        {/* REQ-008 Distance note */}
+        {/* Distance disclaimer note (REQ-008, REQ-066) */}
         <p className="text-xs text-[#736B5E] italic">
-          * Distances are approximate (REQ-008)
+          * Calculated straight-line estimates between coordinates
         </p>
       </div>
 
@@ -41,6 +41,8 @@ export default function PlaceNearbySection({ nearby }: PlaceNearbySectionProps) 
           const rawImageUrl =
             place.first_image_url || place.image_url || place.first_image;
           const categories = place.categories || place.category_names || [];
+          const isRestaurant = place.is_restaurant || categories.includes("Restaurant") || categories.includes("Food & Dining");
+          const isRecreation = place.is_recreation || categories.includes("Recreation");
 
           return (
             <Link
@@ -64,7 +66,23 @@ export default function PlaceNearbySection({ nearby }: PlaceNearbySectionProps) 
                   </div>
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+
+                {/* Nearby Category Indicator (REQ-074, REQ-075) */}
+                <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1">
+                  {isRestaurant && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/90 text-white backdrop-blur-xs px-2 py-0.5 text-[10px] font-bold">
+                      <Utensils className="h-3 w-3" />
+                      <span>Dining</span>
+                    </span>
+                  )}
+                  {isRecreation && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-teal-600/90 text-white backdrop-blur-xs px-2 py-0.5 text-[10px] font-bold">
+                      <Sparkles className="h-3 w-3" />
+                      <span>Recreation</span>
+                    </span>
+                  )}
+                </div>
 
                 {/* Distance pill badge */}
                 <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 rounded-md bg-black/60 backdrop-blur-xs px-2 py-0.5 text-[11px] font-semibold text-white">

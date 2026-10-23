@@ -9,7 +9,13 @@ class PlanItem extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'visit_plan_id',
+        'attraction_id',
+        'sequence',
+        'start_time',
+        'notes',
+    ];
 
     public function attraction() { return $this->belongsTo(Attraction::class)->withTrashed(); }
     public function visitPlan()  { return $this->belongsTo(VisitPlan::class); }

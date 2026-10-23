@@ -13,13 +13,16 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
+        $email = env('ADMIN_SEED_EMAIL', 'admin@westerntrails.lk');
+        $password = env('ADMIN_SEED_PASSWORD', 'Admin@12345');
+
         User::updateOrCreate(
-            ['email' => 'admin@westerntrails.lk'],
+            ['email' => $email],
             [
-                'name' => 'Administrator',
-                'password' => Hash::make('Admin@12345'),
-                'role' => 'admin',
-                'status' => 'active',
+                'name'     => 'Administrator',
+                'password' => Hash::make($password),
+                'role'     => 'admin',
+                'status'   => 'active',
             ]
         );
     }

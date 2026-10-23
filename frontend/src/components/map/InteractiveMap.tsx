@@ -192,6 +192,49 @@ function MapViewController({
   return null;
 }
 
+// Invalidator to force Leaflet to calculate container dimensions and trigger tile loading
+function MapResizer() {
+  const map = useMap();
+
+  useEffect(() => {
+    // Initial immediate invalidation
+    map.invalidateSize();
+
+    // Use ResizeObserver to automatically resize map whenever container dimensions change
+    const container = map.getContainer();
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && container) {
+      resizeObserver = new ResizeObserver(() => {
+        map.invalidateSize();
+      });
+      resizeObserver.observe(container);
+    }
+
+    // Staggered timers to handle layout settling and flex calculations
+    const t1 = setTimeout(() => map.invalidateSize(), 50);
+    const t2 = setTimeout(() => map.invalidateSize(), 200);
+    const t3 = setTimeout(() => map.invalidateSize(), 600);
+    const t4 = setTimeout(() => map.invalidateSize(), 1200);
+
+    const onResize = () => {
+      map.invalidateSize();
+    };
+
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", onResize);
+    };
+  }, [map]);
+
+  return null;
+}
+
 export default function InteractiveMap({
   places,
   selectedPlaceId,
@@ -295,7 +338,7 @@ export default function InteractiveMap({
   };
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#E1D7BF]">
+    <div className="relative flex-1 flex flex-col h-full min-h-full w-full overflow-hidden bg-[#E1D7BF]">
       {/* Geolocation Error Alert Banner (if permission denied or error) */}
       {locationError && (
         <div
@@ -361,8 +404,10 @@ export default function InteractiveMap({
         minZoom={9}
         maxZoom={18}
         scrollWheelZoom={false} // Prevents trapping phone scrolling
-        className="h-full w-full z-0"
+        style={{ height: "100%", width: "100%", minHeight: "100%", flex: 1 }}
+        className="h-full w-full flex-1 z-0"
       >
+        <MapResizer />
         <MapViewController
           targetCoords={viewTarget?.coords ?? null}
           zoom={viewTarget?.zoom}

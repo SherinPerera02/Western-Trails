@@ -9,7 +9,11 @@ class AttractionImage extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'attraction_id',
+        'image_path',
+        'caption',
+    ];
 
     public function attraction() { return $this->belongsTo(Attraction::class); }
 }

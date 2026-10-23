@@ -35,8 +35,12 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${fraunces.variable} ${dmSans.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-[#FBF9F4] text-[#1E2421] font-sans antialiased selection:bg-[#E8E2D5] selection:text-[#174D44]">
+      <body
+        className="min-h-full flex flex-col bg-[#FBF9F4] text-[#1E2421] font-sans antialiased selection:bg-[#E8E2D5] selection:text-[#174D44]"
+        suppressHydrationWarning
+      >
         <AuthProvider>
           <PlanProvider>
             <FavoritesProvider>

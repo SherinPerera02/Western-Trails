@@ -13,6 +13,8 @@ import {
   X,
   LayoutDashboard,
   ShieldCheck,
+  Users,
+  MessageSquare,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -37,6 +39,8 @@ export default function AdminNav() {
     { label: "Overview", href: "/admin", icon: LayoutDashboard },
     { label: "Categories", href: "/admin/categories", icon: Layers },
     { label: "Places", href: "/admin/places", icon: MapPin },
+    { label: "Users", href: "/admin/users", icon: Users },
+    { label: "Reviews", href: "/admin/reviews", icon: MessageSquare },
   ];
 
   const isActive = (path: string) => {
