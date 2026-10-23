@@ -141,7 +141,7 @@ export default function AdminReviewsPage() {
             Visitor Reviews & Feedback
           </h1>
           <p className="text-stone-500 text-xs sm:text-sm mt-0.5">
-            Monitor community ratings, approve or flag reviews, and manage feedback across all attractions (REQ-072).
+            Monitor community ratings, approve or flag reviews, and manage feedback across all attractions.
           </p>
         </div>
 
@@ -391,7 +391,7 @@ export default function AdminReviewsPage() {
                           <button
                             type="button"
                             onClick={() => setReviewToDelete(rev)}
-                            title="Delete Review (REQ-072)"
+                            title="Delete Review"
                             className="p-1.5 rounded-lg text-stone-600 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />

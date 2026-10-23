@@ -11,7 +11,6 @@ import {
   RefreshCw,
   AlertCircle,
   CheckCircle2,
-  HelpCircle,
 } from "lucide-react";
 import api, { apiError } from "@/lib/api";
 import CategoryModal, { CategoryItem } from "@/components/admin/CategoryModal";
@@ -112,7 +111,7 @@ export default function AdminCategoriesPage() {
       setDeleteError(
         `Cannot delete "${categoryToDelete.name}": it is currently assigned to ${placesCount} active attraction${
           placesCount > 1 ? "s" : ""
-        }. Under REQ-107, you must reassign or remove these places before deleting this category.`
+        }. Please reassign or remove these places before deleting this category.`
       );
       return;
     }
@@ -373,7 +372,7 @@ export default function AdminCategoriesPage() {
                           onClick={() => handleOpenDelete(cat)}
                           title={
                             (cat.attractions_count || 0) > 0
-                              ? `Cannot delete: attached to ${cat.attractions_count} active place(s) (REQ-107)`
+                              ? `Cannot delete: attached to ${cat.attractions_count} active place(s)`
                               : "Delete Category"
                           }
                           className={`p-1.5 rounded-lg transition-colors ${
@@ -392,14 +391,6 @@ export default function AdminCategoriesPage() {
             </table>
           </div>
         )}
-      </div>
-
-      {/* REQ-107 Helpful info */}
-      <div className="flex items-center gap-2 text-xs text-stone-400 px-1">
-        <HelpCircle className="w-3.5 h-3.5 text-stone-400" />
-        <span>
-          Note: Categories attached to active attractions cannot be deleted (REQ-107). Reassign or delete places first.
-        </span>
       </div>
 
       {/* Add / Edit Category Modal */}
@@ -430,7 +421,7 @@ export default function AdminCategoriesPage() {
               <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <p className="font-semibold text-amber-900">
-                  Protected Category (REQ-107)
+                  Protected Category
                 </p>
                 <p className="text-amber-800 leading-relaxed">
                   Western Trails requires that categories linked to active attractions cannot be deleted.

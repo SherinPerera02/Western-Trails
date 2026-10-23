@@ -33,7 +33,7 @@ export const placeSchema = z.object({
     .max(5000, "Description must not exceed 5000 characters"),
   category_ids: z
     .array(z.number())
-    .min(1, "At least one category is required (BR-003)"),
+    .min(1, "At least one category is required"),
   latitude: z
     .number({ message: "Latitude must be a valid number" })
     .min(5.9, "Latitude must be between 5.9 and 9.9 (Sri Lanka)")

@@ -228,7 +228,7 @@ export default function AdminLandingPage() {
             </div>
             <h2 className="font-serif text-lg font-bold text-stone-900 mb-1">Categories</h2>
             <p className="text-stone-600 text-xs sm:text-sm leading-relaxed mb-6">
-              Organize attractions into categories (Beaches, Nature, Religious). Enforce active state and deletion protection (REQ-107).
+              Organize attractions into categories (Beaches, Nature, Religious). Enforce active state and deletion protection.
             </p>
           </div>
           <Link
@@ -240,7 +240,7 @@ export default function AdminLandingPage() {
           </Link>
         </div>
 
-        {/* Users Card (REQ-099 to REQ-102) */}
+        {/* Users Card */}
         <div className="bg-white rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition-shadow p-6 flex flex-col justify-between group">
           <div>
             <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 border border-teal-100 flex items-center justify-center mb-4 group-hover:bg-teal-700 group-hover:text-white transition-colors">
@@ -248,7 +248,7 @@ export default function AdminLandingPage() {
             </div>
             <h2 className="font-serif text-lg font-bold text-stone-900 mb-1">User Accounts</h2>
             <p className="text-stone-600 text-xs sm:text-sm leading-relaxed mb-6">
-              View registered users, inspect activity (plans, favorites, reviews), and deactivate or remove accounts (REQ-099–102).
+              View registered users, inspect activity (plans, favorites, reviews), and deactivate or remove accounts.
             </p>
           </div>
           <Link
@@ -260,7 +260,7 @@ export default function AdminLandingPage() {
           </Link>
         </div>
 
-        {/* Reviews Card (REQ-072) */}
+        {/* Reviews Card */}
         <div className="bg-white rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition-shadow p-6 flex flex-col justify-between group">
           <div>
             <div className="w-12 h-12 rounded-xl bg-rose-50 text-[#8C2E1F] border border-rose-100 flex items-center justify-center mb-4 group-hover:bg-[#8C2E1F] group-hover:text-white transition-colors">
@@ -268,7 +268,7 @@ export default function AdminLandingPage() {
             </div>
             <h2 className="font-serif text-lg font-bold text-stone-900 mb-1">Reviews & Ratings</h2>
             <p className="text-stone-600 text-xs sm:text-sm leading-relaxed mb-6">
-              Oversee visitor reviews, approve or reject feedback, and delete obsolete or inappropriate comments (REQ-072).
+              Oversee visitor reviews, approve or reject feedback, and delete obsolete or inappropriate comments.
             </p>
           </div>
           <Link
