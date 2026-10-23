@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import {
   Layers,
   Plus,
@@ -36,6 +37,12 @@ export default function AdminCategoriesPage() {
   // Delete dialog state
   const [categoryToDelete, setCategoryToDelete] = useState<CategoryItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleOpenDelete = (cat: CategoryItem) => {
+    setDeleteError(null);
+    setCategoryToDelete(cat);
+  };
 
   const fetchCategories = async (isBackground = false) => {
     if (!isBackground) setLoading(true);
@@ -99,7 +106,19 @@ export default function AdminCategoriesPage() {
 
   const handleDeleteConfirm = async () => {
     if (!categoryToDelete) return;
+
+    const placesCount = categoryToDelete.attractions_count ?? 0;
+    if (placesCount > 0) {
+      setDeleteError(
+        `Cannot delete "${categoryToDelete.name}": it is currently assigned to ${placesCount} active attraction${
+          placesCount > 1 ? "s" : ""
+        }. Under REQ-107, you must reassign or remove these places before deleting this category.`
+      );
+      return;
+    }
+
     setIsDeleting(true);
+    setDeleteError(null);
 
     try {
       await api.delete(`/categories/${categoryToDelete.id}`);
@@ -108,11 +127,14 @@ export default function AdminCategoriesPage() {
         message: `Category "${categoryToDelete.name}" was deleted successfully.`,
       });
       setCategoryToDelete(null);
+      setDeleteError(null);
       fetchCategories(true);
     } catch (err) {
+      const msg = apiError(err) || "Could not delete category.";
+      setDeleteError(msg);
       setNotification({
         type: "error",
-        message: apiError(err) || "Could not delete category.",
+        message: msg,
       });
     } finally {
       setIsDeleting(false);
@@ -348,9 +370,17 @@ export default function AdminCategoriesPage() {
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => setCategoryToDelete(cat)}
-                          title="Delete Category"
-                          className="p-1.5 rounded-lg text-stone-600 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          onClick={() => handleOpenDelete(cat)}
+                          title={
+                            (cat.attractions_count || 0) > 0
+                              ? `Cannot delete: attached to ${cat.attractions_count} active place(s) (REQ-107)`
+                              : "Delete Category"
+                          }
+                          className={`p-1.5 rounded-lg transition-colors ${
+                            (cat.attractions_count || 0) > 0
+                              ? "text-stone-400 hover:text-amber-700 hover:bg-amber-50"
+                              : "text-stone-600 hover:text-rose-600 hover:bg-rose-50"
+                          }`}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -381,6 +411,7 @@ export default function AdminCategoriesPage() {
           setSelectedCategory(null);
         }}
         onSuccess={handleModalSuccess}
+        onDelete={handleOpenDelete}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -390,14 +421,51 @@ export default function AdminCategoriesPage() {
         itemName={categoryToDelete?.name || ""}
         message={
           categoryToDelete && (categoryToDelete.attractions_count || 0) > 0
-            ? `Warning: This category is currently associated with ${categoryToDelete.attractions_count} place(s). The system will reject deletion if any non-deleted attraction still references it.`
-            : "This action cannot be undone. Are you sure you want to remove this category from the system?"
+            ? `This category cannot be deleted right now because it is currently assigned to ${categoryToDelete.attractions_count} active place(s).`
+            : "Are you sure you want to delete this category? This action cannot be undone."
         }
-        confirmLabel="Delete Category"
+        notice={
+          categoryToDelete && (categoryToDelete.attractions_count || 0) > 0 ? (
+            <div className="p-3.5 rounded-xl bg-amber-50/90 border border-amber-200/90 text-xs text-amber-950 flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-semibold text-amber-900">
+                  Protected Category (REQ-107)
+                </p>
+                <p className="text-amber-800 leading-relaxed">
+                  Western Trails requires that categories linked to active attractions cannot be deleted.
+                  Please reassign or delete the associated attractions before removing this category.
+                </p>
+                <Link
+                  href="/admin/places"
+                  onClick={() => {
+                    setCategoryToDelete(null);
+                    setDeleteError(null);
+                  }}
+                  className="inline-flex items-center gap-1 font-semibold text-[#174D44] hover:underline pt-1"
+                >
+                  Manage Places &rarr;
+                </Link>
+              </div>
+            </div>
+          ) : null
+        }
+        confirmLabel={
+          categoryToDelete && (categoryToDelete.attractions_count || 0) > 0
+            ? "Cannot Delete (In Use)"
+            : "Delete Category"
+        }
+        confirmDisabled={Boolean(
+          categoryToDelete && (categoryToDelete.attractions_count || 0) > 0
+        )}
+        errorMessage={deleteError}
         isDestructive={true}
         isLoading={isDeleting}
         onConfirm={handleDeleteConfirm}
-        onCancel={() => setCategoryToDelete(null)}
+        onCancel={() => {
+          setCategoryToDelete(null);
+          setDeleteError(null);
+        }}
       />
     </div>
   );

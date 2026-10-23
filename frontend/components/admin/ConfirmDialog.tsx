@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Trash2, X } from "lucide-react";
+import { AlertTriangle, Trash2, X, AlertCircle } from "lucide-react";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -11,6 +11,9 @@ interface ConfirmDialogProps {
   cancelLabel?: string;
   isDestructive?: boolean;
   isLoading?: boolean;
+  errorMessage?: string | null;
+  notice?: React.ReactNode;
+  confirmDisabled?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -24,6 +27,9 @@ export default function ConfirmDialog({
   cancelLabel = "Cancel",
   isDestructive = true,
   isLoading = false,
+  errorMessage,
+  notice,
+  confirmDisabled = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -86,6 +92,17 @@ export default function ConfirmDialog({
                 {itemName}
               </span>
             </div>
+
+            {/* Custom Notice (warnings, requirements, contextual info) */}
+            {notice && <div className="mt-3.5">{notice}</div>}
+
+            {/* Error Message */}
+            {errorMessage && (
+              <div className="mt-3.5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-xs text-rose-800 animate-in fade-in duration-150">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                <div className="flex-1 font-medium leading-relaxed">{errorMessage}</div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -101,11 +118,11 @@ export default function ConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            disabled={isLoading}
+            disabled={isLoading || confirmDisabled}
             className={`px-4 py-2 text-sm font-medium text-white rounded-lg focus:outline-hidden transition-all shadow-sm flex items-center gap-2 ${
               isDestructive
-                ? "bg-rose-600 hover:bg-rose-700 disabled:bg-rose-400"
-                : "bg-[#174D44] hover:bg-[#123E37] disabled:bg-stone-400"
+                ? "bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 disabled:cursor-not-allowed"
+                : "bg-[#174D44] hover:bg-[#123E37] disabled:bg-stone-300 disabled:cursor-not-allowed"
             }`}
           >
             {isLoading ? (

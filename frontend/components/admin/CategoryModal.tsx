@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X, Layers, AlertCircle } from "lucide-react";
+import { X, Layers, AlertCircle, Trash2 } from "lucide-react";
 import api, { apiError } from "@/lib/api";
 import {
   categorySchema,
@@ -24,6 +24,7 @@ interface CategoryModalProps {
   category: CategoryItem | null; // null = Add mode, object = Edit mode
   onClose: () => void;
   onSuccess: (cat: CategoryItem, isEdit: boolean) => void;
+  onDelete?: (cat: CategoryItem) => void;
 }
 
 export default function CategoryModal({
@@ -31,6 +32,7 @@ export default function CategoryModal({
   category,
   onClose,
   onSuccess,
+  onDelete,
 }: CategoryModalProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const isEdit = Boolean(category);
@@ -211,20 +213,37 @@ export default function CategoryModal({
           </div>
 
           {/* Footer */}
-          <div className="bg-stone-50 px-6 py-4 border-t border-stone-200 flex items-center justify-end gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-lg hover:bg-stone-100 transition-colors disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-5 py-2 text-sm font-medium text-white bg-[#174D44] hover:bg-[#123E37] rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center gap-2"
-            >
+          <div className="bg-stone-50 px-6 py-4 border-t border-stone-200 flex items-center justify-between gap-3">
+            <div>
+              {isEdit && category && onDelete && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onDelete(category);
+                  }}
+                  disabled={isSubmitting}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg border border-rose-200 transition-colors disabled:opacity-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete Category</span>
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={isSubmitting}
+                className="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-lg hover:bg-stone-100 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-5 py-2 text-sm font-medium text-white bg-[#174D44] hover:bg-[#123E37] rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center gap-2"
+              >
               {isSubmitting ? (
                 <>
                   <svg
@@ -256,7 +275,8 @@ export default function CategoryModal({
               )}
             </button>
           </div>
-        </form>
+        </div>
+      </form>
       </div>
     </div>
   );

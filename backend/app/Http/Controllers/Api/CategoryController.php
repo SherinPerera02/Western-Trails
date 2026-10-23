@@ -99,8 +99,10 @@ class CategoryController extends Controller
 
         // REQ-107: Refuse deletion if attached to any non-deleted attraction
         if ($category->attractions()->exists()) {
+            $count = $category->attractions()->count();
             return response()->json([
-                'message' => 'Cannot delete category: it is still attached to one or more attractions.',
+                'message' => "Cannot delete category: it is still attached to {$count} attraction(s).",
+                'attractions_count' => $count,
             ], 409);
         }
 

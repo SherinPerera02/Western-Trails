@@ -89,8 +89,11 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
             Route::put('/reviews/{id}/status', [AdminReviewController::class, 'updateStatus']);
             Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy']);
 
-            // Place & Category Admin Views
+            // Place & Category Admin Views & Operations
             Route::get('/categories', [CategoryController::class, 'adminIndex']);
+            Route::post('/categories', [CategoryController::class, 'store']);
+            Route::put('/categories/{id}', [CategoryController::class, 'update']);
+            Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
             Route::get('/places', [PlaceController::class, 'adminIndex']);
             Route::get('/places/{id}', [PlaceController::class, 'adminShow']);
             Route::post('/places/{id}/restore', [PlaceController::class, 'restore']);
